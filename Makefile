@@ -31,9 +31,12 @@ COMMON_FLAGS += -O2 -c \
 	-Wall -Wextra -Werror \
 	-Ikafel/include
 
-CXXFLAGS += $(USER_DEFINES) $(COMMON_FLAGS) $(shell pkg-config --cflags protobuf) \
+#CXXFLAGS += $(USER_DEFINES) $(COMMON_FLAGS) $(shell pkg-config --cflags protobuf) \
 	-std=c++11 -fno-exceptions -Wno-unused -Wno-unused-parameter
-LDFLAGS += -pie -Wl,-z,noexecstack -lpthread $(shell pkg-config --libs protobuf)
+#LDFLAGS += -pie -Wl,-z,noexecstack -lpthread $(shell pkg-config --libs protobuf)
+CXXFLAGS += $(USER_DEFINES) $(COMMON_FLAGS) -I./third_party/nl_inc/include -pthread -I./third_party/protobuf_inc/src\
+	-std=c++11 -fno-exceptions -Wno-unused -Wno-unused-parameter
+LDFLAGS += -pie -Wl,-z,noexecstack -lpthread -L./third_party/lib -lprotobuf -lpthread   -lnl-3 -lnl-route-3
 
 BIN = nsjail
 LIBS = kafel/libkafel.a
@@ -87,7 +90,7 @@ $(SRCS_PB_CXX) $(SRCS_PB_H): $(SRCS_PROTO)
 
 .PHONY: clean
 clean:
-	$(RM) core Makefile.bak $(OBJS) $(SRCS_PB_CXX) $(SRCS_PB_H) $(BIN)
+	$(RM) core Makefile.bak $(OBJS)  $(BIN)
 ifneq ("$(wildcard kafel/Makefile)","")
 	$(MAKE) -C kafel clean
 endif

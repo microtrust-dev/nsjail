@@ -337,6 +337,8 @@ static std::unique_ptr<std::string> getDir(nsjconf_t* nsjconf, const char* name)
 	return nullptr;
 }
 
+//bpfix:not use this mode
+#if 0
 static bool initNoCloneNs(nsjconf_t* nsjconf) {
 	/*
 	 * If CLONE_NEWNS is not used, we would be changing the global mount namespace, so simply
@@ -355,7 +357,7 @@ static bool initNoCloneNs(nsjconf_t* nsjconf) {
 	}
 	return true;
 }
-
+#endif
 static bool initCloneNs(nsjconf_t* nsjconf) {
 	if (chdir("/") == -1) {
 		PLOG_E("chdir('/')");
@@ -432,9 +434,12 @@ static bool initNsInternal(nsjconf_t* nsjconf) {
 			return false;
 		}
 	} else {
+// bpfix not use
+#if 0
 		if (!initNoCloneNs(nsjconf)) {
 			return false;
 		}
+#endif
 	}
 
 	if (chdir(nsjconf->cwd.c_str()) == -1) {
@@ -452,7 +457,8 @@ bool initNs(nsjconf_t* nsjconf) {
 	if (nsjconf->mode != MODE_STANDALONE_EXECVE) {
 		return initNsInternal(nsjconf);
 	}
-
+//bpfix not use
+#if 0
 	pid_t pid = subproc::cloneProc(CLONE_FS | SIGCHLD);
 	if (pid == -1) {
 		return false;
@@ -469,6 +475,9 @@ bool initNs(nsjconf_t* nsjconf) {
 		return true;
 	}
 	return false;
+#else
+	return false;
+#endif
 }
 
 static bool addMountPt(mount_t* mnt, const std::string& src, const std::string& dst,
